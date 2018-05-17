@@ -1,7 +1,3 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<iostream>
-#include<string.h>
 /*
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 |					       +
@@ -11,7 +7,10 @@
 |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 */
 
-
+#include<stdio.h>
+#include<stdlib.h>
+#include<iostream>
+#include<string.h>
 typedef struct array Array;
 struct array{
 	char *data;
