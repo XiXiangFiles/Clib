@@ -21,10 +21,11 @@ struct array{
 class  ArrayList{
 	Array *ptr;//end
 	Array *Head;//head
-	
+	int length;	
+
 	public :
 	
-		int length;	
+		
 		 ArrayList(){	
 		//	printf("Arraylist start!\n");
 			Array *head=(Array *)malloc(sizeof(Array));
@@ -80,12 +81,15 @@ class  ArrayList{
 			}
 			return data;
 		}
+		int length(){
+			return this.length;
+		}
 
-	char *allmem(int num){
-		void *ptr;
-		ptr=(char *)malloc(sizeof(char)*num);
-		return (char*)ptr;
-	}
+		char *allmem(int num){
+			void *ptr;
+			ptr=(char *)malloc(sizeof(char)*num);
+			return (char*)ptr;
+		}
 
 };
 /*
