@@ -21,7 +21,7 @@ struct array{
 class  ArrayList{
 	Array *ptr;//end
 	Array *Head;//head
-	int length;	
+	int Length;	
 
 	public :
 	
@@ -31,7 +31,7 @@ class  ArrayList{
 			Array *head=(Array *)malloc(sizeof(Array));
 			ptr=head;
 			Head=head;
-			length=0;
+			Length=0;
 		
 		}
 
@@ -52,18 +52,18 @@ class  ArrayList{
 			
 			}
 		//	printf("put length= %d\n",length);
-			length++;
+			Length++;
 		
 			return 0;
 		}
 		char *pop(){
 			char *data;		
 			//printf("pop length= %d \n",length);
-			if(length==0){
+			if(Length==0){
 
 				return NULL;
 			}
-			else if(length--==1){
+			else if(Length--==1){
 				data=allmem(sizeof(Head->data));
 				strcpy(data,Head->data);
 				free(Head);
@@ -82,7 +82,7 @@ class  ArrayList{
 			return data;
 		}
 		int length(){
-			return this.length;
+			return (this->Length)+1;
 		}
 
 		char *allmem(int num){
