@@ -8,6 +8,7 @@
 typedef struct Node node;
 struct Node{
 	char str[1024];	
+//	node *father;
 	node *left;
 	node *right;
 };
@@ -46,7 +47,7 @@ class dosthfile{
 				perror("write failed!");
 				return 0;
 			}else{
-				insert(NULL,this->root,data);
+				insert(this->root,data);
 				count++;
 				return 1;
 			}
@@ -78,12 +79,10 @@ class dosthfile{
 					data[i++]=buf[0];
 				//	printf("i= %d \t buf[0]=%c\n",i,buf[0]);
 				}else if(buf[0]!=10){
-				//	printf("data= %s\n",data);
+			//		printf("data= %s\n",data);
 //					printf("strlen=%d\n",strlen(data));
 					if(strlen(data)>0){
-						node *n;
-						n=0;
-						insert(n,this->root,data);
+						insert(this->root,data);
 					}
 					memset(data,0,1024);
 					i=0;
@@ -93,44 +92,44 @@ class dosthfile{
 			close(fd);
 		}
 		
-		void insert(node *father ,node *root,char *data){
+		void insert(node *root,char *data){
 			node *ptr;
 			ptr=root;
-			
-			if(father == 0 && this->length>0){
-				father=this->root;
-			}
-			
+	
 			if(length==0){
-
+//				printf("insert into root %s \n\n",data);
 				ptr=(node *)malloc(sizeof( struct Node));
 				memcpy(ptr->str,data,strlen(data));
 				this->length+=1;
 				this->root=ptr;
+
 			
 			}else if(this->length>0 && strlen(data)<= strlen(root->str) && root->left!=0){
 				
-				printf("into recursive left\n");
-				insert(ptr,ptr->left,data);
+//				printf("into recursive left\n");
 
-			}else if(this->length >0 && strlen(data) <= strlen(root->str) && root->left==0){
+				insert(root->left,data);
 				
-				printf("into  left\n");
-				ptr=(node *)malloc(sizeof( struct Node));
-				memcpy(ptr->str,data,strlen(data));
-				father->left=ptr;
-
+			}else if(this->length >0 && strlen(data) <= strlen(root->str) && root->left==0){
+//				printf("insert into left %s \n\n",data);
+				//printf("into  left\n");
+				node *n;
+				n=(node *)malloc(sizeof( struct Node));
+				memcpy(n->str,data,strlen(data));
+				ptr->left=n;
+				this->length+=1;
 			}else  if(this->length >0 && strlen(data) > strlen(root->str) && root->right!=0){
 				
-				printf("into recursive right\n");
-				insert(ptr,ptr->right,data);
+//				printf("into recursive right\n");
+				insert(ptr->right,data);
 
-			}else if(this->length >0 && strlen(data) > strlen(root->str) && root->left==0){
-				printf("into right\n");
-				ptr=(node *)malloc(sizeof( struct Node));
-				memcpy(ptr->str,data,strlen(data));
-				father->right=ptr;
-			
+			}else if(this->length >0 && strlen(data) > strlen(root->str) && root->right==0){
+//				printf("insert into right %s \n\n",data);
+				node *n;
+				n=(node *)malloc(sizeof( struct Node));
+				memcpy(n->str,data,strlen(data));
+				ptr->right=n;
+				this->length+=1;
 			}
 			
 		}
@@ -138,20 +137,35 @@ class dosthfile{
 		node *PALL( node *root){
 			node *ptr;
 			ptr=root;	
-			printf("%s\n",root->str);			
-			if( root != NULL){	
-				printf("%s\n",root->str);			
-			}else if(ptr->left!= NULL){		
-		//		PALL(ptr->left);
-			}if(ptr->right!=NULL){
-		//		PALL(ptr->right);
+
+			if( root->left != NULL){	
+				printf("into left\n");
+				PALL(ptr->left);			
+			}
+		       	if(ptr->right!= NULL){
+
+				printf("into right\n");	
+				PALL(ptr->right);
+			}
+			if(ptr->left==NULL && ptr->right==NULL){
+				printf("release= %s\n",ptr->str);
+				free(ptr);
 			}
 			
-		//	free(ptr);
+			//free(ptr);
+/*
+			printf("root=%s\n",ptr->str);
+			printf("root->left=%s\n",ptr->left->str);
+			printf("root->left->left=%s\n",ptr->left->left->str);
+*/
 			return NULL;
 		}
 		void prefix(){
-			PALL(this->root);			
+			while(this->length!=0){
+			//	println("len=%d \n\n",this->length);
+				PALL(this->root);			
+				this->length--;
+			}
 		}	
 };
 
@@ -159,16 +173,17 @@ class dosthfile{
 int main(void){
 	dosthfile f("test.txt");
 //	f.fileread();
-/*	
-	char *str="bbbb::100;\n";
+	/*
+	char *str="bbbb::100ee;\n";
 	printf("%d",f.filewrite(str,strlen(str),O_RDWR|O_APPEND));	
 	printf("length=%d\n",f.length);
 	printf("%d",f.filewrite(str,strlen(str),O_RDWR|O_APPEND));	
 	printf("length=%d\n",f.length);
 	printf("%d",f.filewrite(str,strlen(str),O_RDWR|O_APPEND));	
 	printf("length=%d\n",f.length);
-	f.fileread();
-*/	
-//	f.prefix();
+	*/
+//	f.fileread();
+	
+	f.prefix();
 	return 0;
 }
