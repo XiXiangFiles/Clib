@@ -8,7 +8,7 @@
 typedef struct Node node;
 struct Node{
 	char str[1024];	
-//	node *father;
+	node *father;
 	node *left;
 	node *right;
 };
@@ -100,9 +100,10 @@ class dosthfile{
 //				printf("insert into root %s \n\n",data);
 				ptr=(node *)malloc(sizeof( struct Node));
 				memcpy(ptr->str,data,strlen(data));
+				ptr->father=NULL;
 				this->length+=1;
 				this->root=ptr;
-
+				
 			
 			}else if(this->length>0 && strlen(data)<= strlen(root->str) && root->left!=0){
 				
@@ -117,6 +118,7 @@ class dosthfile{
 				n=(node *)malloc(sizeof( struct Node));
 				memcpy(n->str,data,strlen(data));
 				ptr->left=n;
+				n->father=ptr;
 				this->length+=1;
 			}else  if(this->length >0 && strlen(data) > strlen(root->str) && root->right!=0){
 				
@@ -129,43 +131,41 @@ class dosthfile{
 				n=(node *)malloc(sizeof( struct Node));
 				memcpy(n->str,data,strlen(data));
 				ptr->right=n;
+				n->father=ptr;
 				this->length+=1;
 			}
 			
 		}
 
-		node *PALL( node *root){
+		node *PALL( node *father,node *root){
 			node *ptr;
 			ptr=root;	
 
 			if( root->left != NULL){	
 				printf("into left\n");
-				PALL(ptr->left);			
+				PALL(root,root->left);			
 			}
-		       	if(ptr->right!= NULL){
+			if(ptr->right!= NULL){
 
 				printf("into right\n");	
-				PALL(ptr->right);
-			}
-			if(ptr->left==NULL && ptr->right==NULL){
+				PALL(root,root->right);
+			
+			} 
+			if(ptr->left==NULL && ptr->right==NULL && this->length >0){
+				this->length-=1;
 				printf("release= %s\n",ptr->str);
 				free(ptr);
+				if(this->length!=0){
+					father->left=NULL;
+					father->right=NULL;
+					PALL(father->father,father);	
+				}
 			}
 			
-			//free(ptr);
-/*
-			printf("root=%s\n",ptr->str);
-			printf("root->left=%s\n",ptr->left->str);
-			printf("root->left->left=%s\n",ptr->left->left->str);
-*/
 			return NULL;
 		}
-		void prefix(){
-			while(this->length!=0){
-			//	println("len=%d \n\n",this->length);
-				PALL(this->root);			
-				this->length--;
-			}
+		void prefix(){	
+			PALL(NULL,this->root);			
 		}	
 };
 
