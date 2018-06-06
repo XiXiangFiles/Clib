@@ -137,18 +137,18 @@ class dosthfile{
 			
 		}
 
-		node *PALL( node *father,node *root){
+		node *PALL( node *father,node *root,char d){
 			node *ptr;
 			ptr=root;	
 
 			if( root->left != NULL){	
 				printf("into left\n");
-				PALL(root,root->left);			
+				PALL(root,root->left,'L');			
 			}
 			if(ptr->right!= NULL){
 
 				printf("into right\n");	
-				PALL(root,root->right);
+				PALL(root,root->right,'R');
 			
 			} 
 			if(ptr->left==NULL && ptr->right==NULL && this->length >0){
@@ -156,16 +156,21 @@ class dosthfile{
 				printf("release= %s\n",ptr->str);
 				free(ptr);
 				if(this->length!=0){
-					father->left=NULL;
-					father->right=NULL;
-					PALL(father->father,father);	
+					if(d=='L'){
+						father->left=NULL;
+						PALL(father->father,father,'R');	
+					}
+					if(d=='R'){
+						father->right=NULL;
+						PALL(father->father,father,'L');	
+					}
 				}
 			}
 			
 			return NULL;
 		}
 		void prefix(){	
-			PALL(NULL,this->root);			
+			PALL(NULL,this->root,'m');			
 		}	
 };
 
