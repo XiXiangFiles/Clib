@@ -25,7 +25,10 @@ class dosthfile{
 				perror("failed to open file");
 				this->fd=creat(filename,777);
 			}
-			close(this->fd);
+			close(fd);
+			fileread();
+			
+
 			root=NULL;
 		}
 		~dosthfile(){
@@ -48,7 +51,7 @@ class dosthfile{
 			}
 			close(fd);	
 		}
-		node *fileread(){
+		void fileread(){
 			char buf[2];
 			char data[1024];
 			int i=0;
@@ -60,7 +63,8 @@ class dosthfile{
 			if(off==-1){
 				perror("instance fileread() failed to lseek");
 			}
-			while(read(fd,buf,1)!= -1 ){
+			while(read(fd,buf,1)!= -1 && buf[0]!=0 && (buf[0]>31 && buf[0]<127) || buf[0]==10){
+				//printf("buf[0]=%d\n",buf[0]);
 				if(buf[0]==10){
 					count++;
 					if(count>64){
@@ -71,12 +75,15 @@ class dosthfile{
 					data[i++]=buf[0];
 				}else if(buf[0]!=10){
 					printf("data=%s\n",data);
+					if(strlen(data)>0){
+						insert(this->root,data);
+					}
 					memset(data,0,1024);
 					i=0;
 					continue;
 				}
 			}
-			return NULL;
+			close(fd);
 		}
 		void insert(node *root,char *data){
 			node *ptr;
@@ -106,20 +113,17 @@ class dosthfile{
 				insert(ptr->right,data);
 			}
 		}
-		char *find(char *keywords){
+		void *PALL(){
 			
-			return NULL;
+			
 		}
 };
-
-
-
 
 
 int main(void){
 	dosthfile f("test.txt");
 	f.fileread();
-	/*	
+	
 	printf("%d",f.filewrite(";\n",2,O_WRONLY|O_APPEND));	
 	printf("%d",f.filewrite("t;\n",3,O_WRONLY|O_APPEND));	
 	printf("%d",f.filewrite("te;\n",4,O_WRONLY|O_APPEND));	
@@ -129,6 +133,7 @@ int main(void){
 	printf("%d",f.filewrite("test33;\n",8,O_WRONLY|O_APPEND));	
 	printf("%d",f.filewrite("test333;\n",9,O_WRONLY|O_APPEND));	
 	printf("%d",f.filewrite("test2222;\n",10,O_WRONLY|O_APPEND));	
-	*/
+//	f.fileread();
+
 	return 0;
 }
