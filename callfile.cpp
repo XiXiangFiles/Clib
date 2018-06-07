@@ -102,6 +102,8 @@ class dosthfile{
 				memcpy(ptr->str,data,strlen(data));
 				ptr->father=NULL;
 				this->length+=1;
+				ptr->right=NULL;
+				ptr->left=NULL;
 				this->root=ptr;
 				
 			
@@ -138,39 +140,64 @@ class dosthfile{
 		}
 
 		node *PALL( node *father,node *root,char d){
+			
 			node *ptr;
 			ptr=root;	
-
 			if( root->left != NULL){	
-				printf("into left\n");
+//				printf("into left\n");
 				PALL(root,root->left,'L');			
 			}
 			if(ptr->right!= NULL){
-
-				printf("into right\n");	
+//				printf("into right---\n");
+			//	printf("father = %d\t root= %d",father,root);	
 				PALL(root,root->right,'R');
-			
-			} 
+			}
+
+			//printf("-----father = %d\t root= %c d= %c\n",father,root,d);	
 			if(ptr->left==NULL && ptr->right==NULL && this->length >0){
 				this->length-=1;
 				printf("release= %s\n",ptr->str);
 				free(ptr);
 				if(this->length!=0){
-					if(d=='L'){
+					if(d=='L' && father!=NULL){
 						father->left=NULL;
-						PALL(father->father,father,'R');	
+						if(father->right!=NULL){
+							PALL(father,father->right,'R');		
+						}else{
+							PALL(father->father,father,'L');
+						}
 					}
-					if(d=='R'){
+					if(d=='R' && father !=NULL){
 						father->right=NULL;
-						PALL(father->father,father,'L');	
+						father->left=NULL;
+						PALL(father->father,father,'M');
 					}
+					if(d=='M' && father != NULL && length!=1){
+					//	printf("FFFFF\n");
+						father->left=NULL;
+						PALL(father->father,father,'M');
+					}else{
+					//	printf("FFFFF2\n");
+						father->left=NULL;
+						father->right=NULL;
+						PALL(father->father,father,'M');
+	
+					}	
 				}
 			}
-			
+			/*
+			printf("root=%s\n",root->str);
+			printf("root->left=%s\n",root->left->str);
+			printf("root->right=%s\n",root->right->str);
+			printf("root->left->left=%s\n",root->left->left->str);
+			printf("root->left->right=%s\n",root->left->right->str);
+			printf("root->right->left=%s\n",root->right->left->str);
+			printf("root->right->right=%s\n",root->right->right->str);
+			*/
 			return NULL;
 		}
 		void prefix(){	
-			PALL(NULL,this->root,'m');			
+			PALL(NULL,this->root,'L');			
 		}	
 };
 
