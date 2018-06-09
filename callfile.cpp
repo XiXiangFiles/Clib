@@ -144,19 +144,16 @@ class dosthfile{
 			node *ptr;
 			ptr=root;	
 			if( root->left != NULL){	
-//				printf("into left\n");
 				PALL(root,root->left,'L');			
 			}
-			if(ptr->right!= NULL){
-//				printf("into right---\n");
-			//	printf("father = %d\t root= %d",father,root);	
+			if(ptr->right!= NULL){	
 				PALL(root,root->right,'R');
-			}
-
-			//printf("-----father = %d\t root= %c d= %c\n",father,root,d);	
+			}	
 			if(ptr->left==NULL && ptr->right==NULL && this->length >0){
 				this->length-=1;
+
 				printf("release= %s\n",ptr->str);
+				
 				free(ptr);
 				if(this->length!=0){
 					if(d=='L' && father!=NULL){
@@ -173,11 +170,9 @@ class dosthfile{
 						PALL(father->father,father,'M');
 					}
 					if(d=='M' && father != NULL && length!=1){
-					//	printf("FFFFF\n");
 						father->left=NULL;
 						PALL(father->father,father,'M');
 					}else{
-					//	printf("FFFFF2\n");
 						father->left=NULL;
 						father->right=NULL;
 						PALL(father->father,father,'M');
@@ -185,19 +180,70 @@ class dosthfile{
 					}	
 				}
 			}
-			/*
-			printf("root=%s\n",root->str);
-			printf("root->left=%s\n",root->left->str);
-			printf("root->right=%s\n",root->right->str);
-			printf("root->left->left=%s\n",root->left->left->str);
-			printf("root->left->right=%s\n",root->left->right->str);
-			printf("root->right->left=%s\n",root->right->left->str);
-			printf("root->right->right=%s\n",root->right->right->str);
-			*/
+			
 			return NULL;
 		}
-		void prefix(){	
-			PALL(NULL,this->root,'L');			
+		
+		void inorder(node *father, node *root, char f){
+		//	printf();
+			if(this->length ==0){
+				exit(1);
+			}
+
+			if(root->left != NULL){
+				//printf("into left \n");
+				inorder(root,root->left,'L');
+			}
+		
+			if(root->left==NULL && root->right==NULL){
+				if(root->str!=NULL){
+					printf("#release=%s\n",root->str);
+				}
+				node *ptr=root;
+
+				if(father!=0 && f=='R'){
+					father->right=NULL;
+				}else if(father !=0 && f=='L'){
+					father->left=NULL;
+				}else if(f=='O'){
+			//		printf("######\n");
+					//free(root->father);
+					//root->father=0;
+					root->right=0;
+					root->left=0;
+					root->father->right=0;
+					root->father=0;
+			//		printf("-----FATHER_STr= %d\n",root->right);
+					//root->father->left=0;
+					//root->father=0;
+				}
+
+				this->length--;
+				free(ptr);
+			}
+			
+			if(father!=0 && father->right != NULL){
+				printf("&release=%s\n",father->str);
+				memset(father->str,0,strlen(father->str));
+				if(father->left==0 && father->right->left==0 && father->right->right==0){
+			//		printf("orphan\n");
+					node *orphan=father->right;
+					father=0;
+					free(father);	
+					inorder(NULL,orphan,'O');
+				//	inorder(father->father,father->father->right,'R');				
+				
+				}else{
+			//		printf("father =%s root=%s \n",father->str,root->str);
+			//:wq		free(father);	
+					inorder(father,father->right,'R');
+				}
+			}
+								
+		}
+		void pre_order(){	
+	//		PALL(NULL,this->root,'M');		
+			inorder(NULL,this->root,'M');	
 		}	
 };
 
@@ -216,6 +262,11 @@ int main(void){
 	*/
 //	f.fileread();
 	
-	f.prefix();
+	f.pre_order();
+	
+	//dosthfile f2("test2.txt");
+	//f2.pre_order();
+	
+	
 	return 0;
 }
