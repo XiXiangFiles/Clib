@@ -17,6 +17,131 @@ class dosthfile{
 	private:
 		char *filename;
 		node *root;
+		void fileread(){
+			char buf[2];
+			char data[1024];
+			int i=0;
+			int count=0;
+			if((fd=open(this->filename,O_RDONLY)==-1)){
+				perror("instance fileread() failed to open");
+			}
+			off_t off;
+			if(off==-1){
+				perror("instance fileread() failed to lseek");
+			}
+			memset(data,0,1024);
+			while(read(fd,buf,1)!= -1 && buf[0]!=0 && (buf[0]>31 && buf[0]<127) || buf[0]==10){
+				if(buf[0]==10){
+					count++;
+					if(count>64){
+						break;
+					}
+				}
+				if(buf[0] !=';'&& buf[0]!='\n'&& buf[0]!=10 ){
+					data[i++]=buf[0];
+				}else if(buf[0]!=10){
+					if(strlen(data)>0){
+						insert(this->root,data);
+					}
+					memset(data,0,1024);
+					i=0;
+					continue;
+				}
+			}
+			close(fd);
+		}
+		node *postOrder( node *father,node *root,char d){
+			
+			node *ptr;
+			ptr=root;	
+			if( root->left != NULL){	
+				postOrder(root,root->left,'L');			
+			}
+			if(ptr->right!= NULL){	
+				postOrder(root,root->right,'R');
+			}	
+			if(ptr->left==NULL && ptr->right==NULL && this->length >0){
+				this->length-=1;
+
+				printf("release= %s\n",ptr->str);
+				
+				free(ptr);
+				if(this->length!=0){
+					if(d=='L' && father!=NULL){
+						father->left=NULL;
+						if(father->right!=NULL){
+							postOrder(father,father->right,'R');		
+						}else{
+							postOrder(father->father,father,'L');
+						}
+					}
+					if(d=='R' && father !=NULL){
+						father->right=NULL;
+						father->left=NULL;
+						postOrder(father->father,father,'M');
+					}
+					if(d=='M' && father != NULL && length!=1){
+						father->left=NULL;
+						postOrder(father->father,father,'M');
+					}else{
+						father->left=NULL;
+						father->right=NULL;
+						postOrder(father->father,father,'M');
+	
+					}	
+				}
+			}
+			
+			return NULL;
+		}
+		void inorder(node *father, node *root, char f){
+		//	printf();
+			if(this->length ==0){
+				exit(1);
+			}
+
+			if(root->left != NULL){
+				//printf("into left \n");
+				inorder(root,root->left,'L');
+			}
+		
+			if(root->left==NULL && root->right==NULL){
+				if(root->str!=NULL){
+					printf("#release=%s\n",root->str);
+				}
+				node *ptr=root;
+
+				if(father!=0 && f=='R'){
+					father->right=NULL;
+				}else if(father !=0 && f=='L'){
+					father->left=NULL;
+				}else if(f=='O'){
+
+					root->right=0;
+					root->left=0;
+					root->father->right=0;
+					root->father=0;
+
+				}
+
+				this->length--;
+				free(ptr);
+			}
+			
+			if(father!=0 && father->right != NULL){
+				printf("&release=%s\n",father->str);
+				memset(father->str,0,strlen(father->str));
+				if(father->left==0 && father->right->left==0 && father->right->right==0){
+					node *orphan=father->right;
+					father=0;
+					free(father);	
+					inorder(NULL,orphan,'O');						
+				}else{
+					inorder(father,father->right,'R');
+				}
+			}
+								
+		}
 	public:
 		
 		int fd;
@@ -54,43 +179,7 @@ class dosthfile{
 			close(fd);	
 		}
 		
-		void fileread(){
-			char buf[2];
-			char data[1024];
-			int i=0;
-			int count=0;
-			if((fd=open(this->filename,O_RDONLY)==-1)){
-				perror("instance fileread() failed to open");
-			}
-			off_t off;
-			if(off==-1){
-				perror("instance fileread() failed to lseek");
-			}
-			memset(data,0,1024);
-			while(read(fd,buf,1)!= -1 && buf[0]!=0 && (buf[0]>31 && buf[0]<127) || buf[0]==10){
-//				printf("buf[0]=%d\n",buf[0]);
-				if(buf[0]==10){
-					count++;
-					if(count>64){
-						break;
-					}
-				}
-				if(buf[0] !=';'&& buf[0]!='\n'&& buf[0]!=10 ){
-					data[i++]=buf[0];
-				//	printf("i= %d \t buf[0]=%c\n",i,buf[0]);
-				}else if(buf[0]!=10){
-			//		printf("data= %s\n",data);
-//					printf("strlen=%d\n",strlen(data));
-					if(strlen(data)>0){
-						insert(this->root,data);
-					}
-					memset(data,0,1024);
-					i=0;
-					continue;
-				}
-			}
-			close(fd);
-		}
+		
 		
 		void insert(node *root,char *data){
 			node *ptr;
@@ -139,110 +228,11 @@ class dosthfile{
 			
 		}
 
-		node *PALL( node *father,node *root,char d){
-			
-			node *ptr;
-			ptr=root;	
-			if( root->left != NULL){	
-				PALL(root,root->left,'L');			
-			}
-			if(ptr->right!= NULL){	
-				PALL(root,root->right,'R');
-			}	
-			if(ptr->left==NULL && ptr->right==NULL && this->length >0){
-				this->length-=1;
-
-				printf("release= %s\n",ptr->str);
-				
-				free(ptr);
-				if(this->length!=0){
-					if(d=='L' && father!=NULL){
-						father->left=NULL;
-						if(father->right!=NULL){
-							PALL(father,father->right,'R');		
-						}else{
-							PALL(father->father,father,'L');
-						}
-					}
-					if(d=='R' && father !=NULL){
-						father->right=NULL;
-						father->left=NULL;
-						PALL(father->father,father,'M');
-					}
-					if(d=='M' && father != NULL && length!=1){
-						father->left=NULL;
-						PALL(father->father,father,'M');
-					}else{
-						father->left=NULL;
-						father->right=NULL;
-						PALL(father->father,father,'M');
-	
-					}	
-				}
-			}
-			
-			return NULL;
-		}
 		
-		void inorder(node *father, node *root, char f){
-		//	printf();
-			if(this->length ==0){
-				exit(1);
-			}
-
-			if(root->left != NULL){
-				//printf("into left \n");
-				inorder(root,root->left,'L');
-			}
 		
-			if(root->left==NULL && root->right==NULL){
-				if(root->str!=NULL){
-					printf("#release=%s\n",root->str);
-				}
-				node *ptr=root;
-
-				if(father!=0 && f=='R'){
-					father->right=NULL;
-				}else if(father !=0 && f=='L'){
-					father->left=NULL;
-				}else if(f=='O'){
-			//		printf("######\n");
-					//free(root->father);
-					//root->father=0;
-					root->right=0;
-					root->left=0;
-					root->father->right=0;
-					root->father=0;
-			//		printf("-----FATHER_STr= %d\n",root->right);
-					//root->father->left=0;
-					//root->father=0;
-				}
-
-				this->length--;
-				free(ptr);
-			}
-			
-			if(father!=0 && father->right != NULL){
-				printf("&release=%s\n",father->str);
-				memset(father->str,0,strlen(father->str));
-				if(father->left==0 && father->right->left==0 && father->right->right==0){
-			//		printf("orphan\n");
-					node *orphan=father->right;
-					father=0;
-					free(father);	
-					inorder(NULL,orphan,'O');
-				//	inorder(father->father,father->father->right,'R');				
-				
-				}else{
-			//		printf("father =%s root=%s \n",father->str,root->str);
-			//:wq		free(father);	
-					inorder(father,father->right,'R');
-				}
-			}
-								
-		}
+		
 		void pre_order(){	
-	//		PALL(NULL,this->root,'M');		
+	//		postOrder(NULL,this->root,'M');		
 			inorder(NULL,this->root,'M');	
 		}	
 };
