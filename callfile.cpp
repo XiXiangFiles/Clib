@@ -4,6 +4,7 @@
 #include<string.h>
 #include<fcntl.h>
 #include<unistd.h>
+#include <errno.h>
 
 typedef struct Node node;
 struct Node{
@@ -142,6 +143,27 @@ class dosthfile{
 			}
 								
 		}
+		int searchTree(node *root,char *data){
+			printf("root= %s , data= %s\n",root->str,data);
+			if(this->length==1){
+				if(strcmp(data,root->str)==0)
+					return 0;
+			}
+			if( strlen(root->str) >strlen(data) && this->length >1){
+				if(strcmp(data,root->str)==0){
+					return 0;
+				}
+				if(root->right!=0)
+					searchTree(root->right,data);
+			}else if( strlen(root->str) <=strlen(data) && this->length >1 ){
+				if(strcmp(data,root->str)==0){
+					return 0;
+				}
+				if(root->left != 0)
+					searchTree(root->left,data);
+			}
+			return 1;
+		}
 	public:
 		
 		int fd;
@@ -152,9 +174,11 @@ class dosthfile{
 			if(fd=open(this->filename,0)==-1){
 				perror("failed to open file");
 				this->fd=creat(filename,777);
+				close(fd);
+			}else{
+				close(fd);
+				fileread();
 			}
-			close(fd);
-			fileread();
 			//memset(root->str,0,1024);
 		}
 		~dosthfile(){
@@ -228,6 +252,12 @@ class dosthfile{
 			
 		}
 
+		int searchNode(char *data){
+			if(strlen(data)!=0 && this->length !=0)
+				return searchTree(this->root,data);
+			else
+				return 1;
+		}
 		
 		
 		
@@ -241,22 +271,21 @@ class dosthfile{
 int main(void){
 	dosthfile f("test.txt");
 //	f.fileread();
-	/*
-	char *str="bbbb::100ee;\n";
-	printf("%d",f.filewrite(str,strlen(str),O_RDWR|O_APPEND));	
-	printf("length=%d\n",f.length);
-	printf("%d",f.filewrite(str,strlen(str),O_RDWR|O_APPEND));	
-	printf("length=%d\n",f.length);
-	printf("%d",f.filewrite(str,strlen(str),O_RDWR|O_APPEND));	
-	printf("length=%d\n",f.length);
-	*/
+	
+	char *str="bbbb::1003e";
+//	printf("%d",f.filewrite(str,strlen(str),O_RDWR|O_APPEND));	
+	
 //	f.fileread();
 	
-	f.pre_order();
+	//f.pre_order();
 	
 	//dosthfile f2("test2.txt");
 	//f2.pre_order();
-	
+	if(f.searchNode(str)==0){
+		printf("correct \n");
+	}else{
+		perror("search failed!");
+	}
 	
 	return 0;
 }
