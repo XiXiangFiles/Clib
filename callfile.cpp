@@ -144,25 +144,22 @@ class dosthfile{
 								
 		}
 		int searchTree(node *root,char *data){
-			printf("root= %s , data= %s\n",root->str,data);
-			if(this->length==1){
-				if(strcmp(data,root->str)==0)
-					return 0;
-			}
-			if( strlen(root->str) >strlen(data) && this->length >1){
-				if(strcmp(data,root->str)==0){
-					return 0;
-				}
+			//printf("root= %s , data= %s  strcmp=%d \n",root->str,data,strcmp(data,root->str));
+			if(strcmp(data,root->str)==0)
+				return 0;
+			
+			if( strlen(root->str) < strlen(data)){
 				if(root->right!=0)
-					searchTree(root->right,data);
-			}else if( strlen(root->str) <=strlen(data) && this->length >1 ){
-				if(strcmp(data,root->str)==0){
-					return 0;
-				}
+					return searchTree(root->right,data);
+
+			}else if( strlen(root->str) >=strlen(data) ){
 				if(root->left != 0)
-					searchTree(root->left,data);
+					return searchTree(root->left,data);
 			}
-			return 1;
+			if(root->left==0 && root->right == 0){
+				
+				return 1;
+			}
 		}
 	public:
 		
@@ -253,9 +250,10 @@ class dosthfile{
 		}
 
 		int searchNode(char *data){
-			if(strlen(data)!=0 && this->length !=0)
+			if(strlen(data)!=0 && this->length !=0){
+				//printf("searchTree = %d\n",searchTree(this->root,data) );
 				return searchTree(this->root,data);
-			else
+			}else
 				return 1;
 		}
 		
@@ -272,7 +270,7 @@ int main(void){
 	dosthfile f("test.txt");
 //	f.fileread();
 	
-	char *str="bbbb::1003e";
+	char *str="bbbb::1003";
 //	printf("%d",f.filewrite(str,strlen(str),O_RDWR|O_APPEND));	
 	
 //	f.fileread();
@@ -284,7 +282,7 @@ int main(void){
 	if(f.searchNode(str)==0){
 		printf("correct \n");
 	}else{
-		perror("search failed!");
+		printf("search failed!");
 	}
 	
 	return 0;
