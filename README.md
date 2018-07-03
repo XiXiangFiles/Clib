@@ -1,7 +1,8 @@
 # Wang-C-C-lib-
 ### hostInfo CPP
 
-`infoHost(char *interface)`</br>
+#### infoHost(char *interface)
+
 `char *getMac(){
 			return src_mac;// interface Mac address	
 } //cpp`</br>
