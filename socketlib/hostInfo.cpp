@@ -63,7 +63,6 @@ class infoHost{
 			memset(srcIP6,0,16);
 			setHostmac(&interface);
 			setHostip(interface);
-
 		}
 		~infoHost(){
 			close(send);
@@ -82,13 +81,3 @@ class infoHost{
 		}
 	
 };
-
-/*
-int main(void ){
-	infoHost h("wlan0");
-	h.getIP();
-	h.getIP6();
-	h.getMac();
-	return 0;
-}
-*/

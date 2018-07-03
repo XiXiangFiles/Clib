@@ -14,7 +14,7 @@ struct Node{
 	node *right;
 };
 
-class dosthfile{
+class IOfile{
 	private:
 		char *filename;
 		node *root;
@@ -166,7 +166,7 @@ class dosthfile{
 		int fd;
 		int count=0;
 		int length=0;
-		dosthfile(char *filename){
+		IOfile(char *filename){
 			this->filename=filename;
 			if(fd=open(this->filename,0)==-1){
 				perror("failed to open file");
@@ -178,7 +178,7 @@ class dosthfile{
 			}
 			//memset(root->str,0,1024);
 		}
-		~dosthfile(){
+		~IOfile(){
 			close(this->fd);
 		}
 		
@@ -207,7 +207,7 @@ class dosthfile{
 			ptr=root;
 	
 			if(length==0){
-//				printf("insert into root %s \n\n",data);
+
 				ptr=(node *)malloc(sizeof( struct Node));
 				memcpy(ptr->str,data,strlen(data));
 				ptr->father=NULL;
@@ -218,14 +218,10 @@ class dosthfile{
 				
 			
 			}else if(this->length>0 && strlen(data)<= strlen(root->str) && root->left!=0){
-				
-//				printf("into recursive left\n");
 
 				insert(root->left,data);
 				
 			}else if(this->length >0 && strlen(data) <= strlen(root->str) && root->left==0){
-//				printf("insert into left %s \n\n",data);
-				//printf("into  left\n");
 				node *n;
 				n=(node *)malloc(sizeof( struct Node));
 				memcpy(n->str,data,strlen(data));
@@ -234,11 +230,9 @@ class dosthfile{
 				this->length+=1;
 			}else  if(this->length >0 && strlen(data) > strlen(root->str) && root->right!=0){
 				
-//				printf("into recursive right\n");
 				insert(ptr->right,data);
 
 			}else if(this->length >0 && strlen(data) > strlen(root->str) && root->right==0){
-//				printf("insert into right %s \n\n",data);
 				node *n;
 				n=(node *)malloc(sizeof( struct Node));
 				memcpy(n->str,data,strlen(data));
@@ -259,26 +253,19 @@ class dosthfile{
 		
 		
 		
-		void pre_order(){	
-	//		postOrder(NULL,this->root,'M');		
+		void pre_order(){		
 			inorder(NULL,this->root,'M');	
 		}	
 };
 
 
 int main(void){
-	dosthfile f("test.txt");
-//	f.fileread();
+	IOfile f("test.txt");
+
+
 	
 	char *str="bbbb::1003";
-//	printf("%d",f.filewrite(str,strlen(str),O_RDWR|O_APPEND));	
-	
-//	f.fileread();
-	
-	//f.pre_order();
-	
-	//dosthfile f2("test2.txt");
-	//f2.pre_order();
+
 	if(f.searchNode(str)==0){
 		printf("correct \n");
 	}else{
