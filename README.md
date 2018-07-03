@@ -1,5 +1,5 @@
 # Wang-C-C-lib-
-##hostInfo CPP
+### hostInfo CPP
 
 infoHost(char *interface)</br>	
 char *getMac(){	</br>
