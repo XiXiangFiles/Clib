@@ -2,9 +2,9 @@
 ### hostInfo CPP
 
 infoHost(char *interface)</br>	
-char *getMac(){	</br>
-			return src_mac;// interface Mac address	</br>
-}</br>
+char *getMac(){
+			return src_mac;// interface Mac address	
+} //cpp</br>
 char *getIP(){</br>
 			return srcIP;// interface IPv4 address</br>	
 }	</br>
