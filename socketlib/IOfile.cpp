@@ -23,7 +23,7 @@ class IOfile{
 			char data[1024];
 			int i=0;
 			int count=0;
-			if((fd=open(this->filename,O_RDONLY)==-1)){
+			if((fd=open(this->filename,O_RDONLY,0644)==-1)){
 				perror("instance fileread() failed to open");
 			}
 			off_t off;
@@ -173,6 +173,7 @@ class IOfile{
 				this->fd=creat(filename,777);
 				close(fd);
 			}else{
+
 				close(fd);
 				fileread();
 			}
@@ -258,10 +259,11 @@ class IOfile{
 		}	
 };
 
-
+/*
 int main(void){
-	IOfile f("test.txt");
-
+	IOfile f("scanLAN.txt");
+//	f.filewrite("bbbb::1003;",11,O_RDWR|O_APPEND);
+	f.pre_order();	
 
 	
 	char *str="bbbb::1003";
@@ -274,3 +276,4 @@ int main(void){
 	
 	return 0;
 }
+*/
